@@ -1,1 +1,1 @@
-# ticker-beats-website
+# ticker-beats-admin
