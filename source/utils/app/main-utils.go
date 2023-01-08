@@ -12,7 +12,7 @@ import (
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 
-	"github.com/Ruscigno/ticker-beats-admin/internal/utils"
+	"github.com/Ruscigno/ticker-beats-admin/source/utils"
 
 	_ "github.com/lib/pq"
 )

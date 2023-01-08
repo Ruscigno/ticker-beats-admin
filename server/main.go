@@ -6,9 +6,9 @@ import (
 
 	"os"
 
-	"github.com/Ruscigno/ticker-beats-admin/internal/api"
-	"github.com/Ruscigno/ticker-beats-admin/internal/utils"
-	"github.com/Ruscigno/ticker-beats-admin/internal/utils/app"
+	"github.com/Ruscigno/ticker-beats-admin/source/api"
+	"github.com/Ruscigno/ticker-beats-admin/source/utils"
+	"github.com/Ruscigno/ticker-beats-admin/source/utils/app"
 
 	_ "github.com/lib/pq"
 
