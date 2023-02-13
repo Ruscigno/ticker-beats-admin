@@ -2,7 +2,7 @@ FROM golang:1.19-alpine as build
 
 WORKDIR /app
 COPY server server
-COPY internal internal
+COPY source source
 # Fetch dependencies
 COPY go.mod ./
 RUN go mod download

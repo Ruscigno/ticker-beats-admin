@@ -1,16 +1,16 @@
 package rebalanceaccount
 
 type RebalanceAccountRequest struct {
-	AccoundID int64 `json:"account_id"`
-	Limit     int   `json:"limit"`
+	AccountsID []int64 `json:"accounts"`
+	Limit      int     `json:"limit"`
 }
 
 type AccountsToRebalanceModel struct {
-	AccountID  int64   `json:"account_id"`
-	Profit     float32 `json:"profit"`
-	ProfitRate float32 `json:"profit_rate"`
-	Volume     float32 `json:"volume"`
-	Deals      int     `json:"deals"`
-	WeekNum    int     `json:"week_num"`
-	PondProfit float32 `json:"pond_profit"`
+	AccountID  int64   `db:"account_id"`
+	Profit     float32 `db:"profit"`
+	ProfitRate float32 `db:"profit_rate"`
+	Volume     float32 `db:"volume"`
+	Deals      int     `db:"deals"`
+	WeekNum    int     `db:"week_num"`
+	PondProfit float32 `db:"pond_profit"`
 }

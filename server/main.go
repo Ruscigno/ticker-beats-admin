@@ -2,16 +2,14 @@ package main
 
 import (
 	"context"
+	"os"
 	"time"
 
-	"os"
-
 	"github.com/Ruscigno/ticker-beats-admin/source/api"
+	"github.com/Ruscigno/ticker-beats-admin/source/rebalanceaccount"
 	"github.com/Ruscigno/ticker-beats-admin/source/utils"
 	"github.com/Ruscigno/ticker-beats-admin/source/utils/app"
-
-	_ "github.com/lib/pq"
-
+	ginzap "github.com/gin-contrib/zap"
 	"go.uber.org/zap"
 )
 
@@ -41,7 +39,20 @@ func main() {
 	defer db.Close()
 
 	ctx := context.Background()
-	router := api.GetRoutes(&ctx, nil)
-	err = router.Run("localhost:31034")
+	repo := rebalanceaccount.NewRepository(&ctx, db)
+	serv := rebalanceaccount.NewRebalanceAccountService(&ctx, repo)
+
+	r := api.GetRoutes(&ctx, serv)
+	// Add a ginzap middleware, which:
+	//   - Logs all requests, like a combined access and error log.
+	//   - Logs to stdout.
+	//   - RFC3339 with UTC time format.
+	r.Use(ginzap.Ginzap(logger, time.RFC3339, true))
+
+	// Logs all panic to error log
+	//   - stack means whether output the stack info.
+	r.Use(ginzap.RecoveryWithZap(logger, true))
+
+	err = r.Run(":31034")
 	logger.Fatal("Internal server error", zap.Error(err))
 }

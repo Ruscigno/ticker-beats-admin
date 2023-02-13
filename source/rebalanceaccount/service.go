@@ -2,24 +2,22 @@ package rebalanceaccount
 
 import (
 	"context"
+	"strings"
 
-	ss "github.com/Ruscigno/ticker-heart/source/tickerbeats/signal/service"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 )
 
 type rebalanceAccountService struct {
-	ctx    *context.Context
-	repo   RebalanceAccountRepo
-	signal ss.SignalService
+	ctx  *context.Context
+	repo RebalanceAccountRepo
 }
 
 // NewRebalanceAccountService creates a new Service
-func NewRebalanceAccountService(ctx *context.Context, repo RebalanceAccountRepo, signal ss.SignalService) RebalanceAccountService {
+func NewRebalanceAccountService(ctx *context.Context, repo RebalanceAccountRepo) RebalanceAccountService {
 	return &rebalanceAccountService{
-		ctx:    ctx,
-		repo:   repo,
-		signal: signal,
+		ctx:  ctx,
+		repo: repo,
 	}
 }
 
@@ -30,22 +28,32 @@ func (s *rebalanceAccountService) RebalanceAccount(c *gin.Context, req Rebalance
 		zap.L().Error("error getting top profitable accounts", zap.Error(err))
 		return err
 	}
-	profitablesMap := make(map[int64]*AccountsToRebalanceModel)
+	profitablesList := []int64{}
 	for _, profitable := range profitables {
-		profitablesMap[profitable.AccountID] = profitable
+		profitablesList = append(profitablesList, profitable.AccountID)
 	}
-	signals, err := s.signal.GetSignalByDestinationAccountID(req.AccoundID, false)
-	if err != nil {
-		zap.L().Error("error getting signals by destination", zap.Error(err))
-		return err
-	}
-	for _, signal := range signals {
-		_, ok := profitablesMap[signal.SourceAccountID]
-		err = s.repo.ChangeActiveState(signal.SourceAccountID, signal.DestinationAccountID, ok)
+	for _, destinationAccountID := range req.AccountsID {
+		err = s.repo.ChangeActiveStateByDestinationAccountID(destinationAccountID, false)
 		if err != nil {
-			zap.L().Error("error updating signal", zap.Error(err))
+			zap.L().Error("error de-activating signals", zap.Any("destinationAccountID", destinationAccountID), zap.Error(err))
 			return err
 		}
+		for _, sourceAccountID := range profitablesList {
+			err = s.repo.TempInsertSignal(sourceAccountID, destinationAccountID)
+			if err != nil && !strings.Contains(err.Error(), "duplicate key value violates unique constraint") {
+				zap.L().Error("error inserting signal", zap.Error(err))
+				return err
+			}
+			err = s.repo.ChangeActiveState(sourceAccountID, destinationAccountID, true)
+			if err != nil {
+				zap.L().Error("error activating signal",
+					zap.Int64("sourceAccountID", sourceAccountID),
+					zap.Int64("destinationAccountID", destinationAccountID),
+					zap.Error(err))
+				return err
+			}
+		}
+
 	}
 	return nil
 }
