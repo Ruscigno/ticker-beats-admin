@@ -1,0 +1,76 @@
+{
+    "tasks": [
+        {
+            "name": "task mt5-win-staging-999",
+            "MainPath": "/home/sander/metatrader5/mt5-win-staging-999",
+            "programs": [
+                {
+                    "command": "cmd",
+                    "args": [
+                        "/C",
+                        "{{MainPath}}/terminal64.exe",
+                        "/portable"
+                    ]
+                }
+            ],
+            "commonConfig":[
+                {
+                    "Key":"Server",
+                    "Value":"MetaQuotes-Demo"
+                },
+                {
+                    "Key":"Login",
+                    "Value":"123"
+                },
+                {
+                    "Key":"Password",
+                    "Value":"foo"
+                },
+                {
+                    "Key":"Environment",
+                    "Value":"foo"
+                },
+                {
+                    "Key":"Services",
+                    "Value":"4294967295"
+                },
+                {
+                    "Key":"MQL5Login",
+                    "Value":"foo"
+                },
+                {
+                    "Key":"MQL5Password",
+                    "Value":"foo"
+                },
+                {
+                    "Key":"WebRequestUrl",
+                    "Value":"foo"
+                },
+                {
+                    "Key":"Expert",
+                    "Value":""
+                },
+                {
+                    "Key":"Symbol",
+                    "Value":""
+                },
+                {
+                    "Key":"Period",
+                    "Value":""
+                },
+                {
+                    "Key":"ExpertParameters",
+                    "Value":""
+                },
+                {
+                    "Key":"Disabled",
+                    "Value":"0"
+                },
+                {
+                    "Key":"Enabled",
+                    "Value":"1"
+                }
+            ]
+        }
+    ]
+}
